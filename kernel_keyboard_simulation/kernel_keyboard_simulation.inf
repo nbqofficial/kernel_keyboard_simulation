@@ -1,0 +1,62 @@
+;
+; kernel_keyboard_simulation.inf
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System ; TODO: specify appropriate Class
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider    = %ManufacturerName%
+CatalogFile = kernel_keyboard_simulation.cat
+DriverVer   = ; TODO: set DriverVer in stampinf property pages
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+kernel_keyboard_simulation.sys = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName% = Standard,NT$ARCH$.10.0...16299 ; %13% support introduced in build 16299
+
+[Standard.NT$ARCH$.10.0...16299]
+%kernel_keyboard_simulation.DeviceDesc% = kernel_keyboard_simulation_Device, Root\kernel_keyboard_simulation ; TODO: edit hw-id
+
+[kernel_keyboard_simulation_Device.NT]
+CopyFiles = File_Copy
+
+[File_Copy]
+kernel_keyboard_simulation.sys
+
+;-------------- Service installation
+[kernel_keyboard_simulation_Device.NT.Services]
+AddService = kernel_keyboard_simulation,%SPSVCINST_ASSOCSERVICE%, kernel_keyboard_simulation_Service_Inst
+
+; -------------- kernel_keyboard_simulation driver install sections
+[kernel_keyboard_simulation_Service_Inst]
+DisplayName    = %kernel_keyboard_simulation.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %13%\kernel_keyboard_simulation.sys
+
+[kernel_keyboard_simulation_Device.NT.Wdf]
+KmdfService = kernel_keyboard_simulation, kernel_keyboard_simulation_wdfsect
+
+[kernel_keyboard_simulation_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ManufacturerName = "<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "kernel_keyboard_simulation Installation Disk"
+kernel_keyboard_simulation.DeviceDesc = "kernel_keyboard_simulation Device"
+kernel_keyboard_simulation.SVCDESC = "kernel_keyboard_simulation Service"
